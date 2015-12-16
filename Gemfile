@@ -1,8 +1,11 @@
 # A sample Gemfile
 source "https://rubygems.org"
-ruby ‘2.2.3’
+
+ruby '2.2.3'
 
 # gem "rails"
-gem ‘spec’
-gem ‘capybara’
-
+gem 'data_mapper'
+gem 'dm-postgres-adapter'
+gem 'rspec'
+gem 'capybara'
+gem 'sinatra'
