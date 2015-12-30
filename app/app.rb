@@ -2,8 +2,19 @@ ENV["RACK_ENV"] ||= "development"
 
 require 'sinatra/base'
 require_relative 'data_mapper_setup'
+require 'byebug'
+
+
 
 class BookmarkManager < Sinatra::Base
+  enable :sessions
+  set :session_secret, 'super secret'
+
+  helpers do
+    def current_user
+      @current_user ||= User.get(session[:user_id])
+    end
+  end
 
   get '/links' do
     @links = Link.all
@@ -11,11 +22,12 @@ class BookmarkManager < Sinatra::Base
   end
 
   post '/links' do
-    link = Link.new(url: params[:URL],
+    link = Link.create(url: params[:URL],
     title: params[:Title])
+    params[:Tags].split.each do |tag|
   #  Link.create(url: params[:URL], title: params[:Title])
-   tag = Tag.create(name: params[:Tags])
-   link.tags << tag
+      link.tags << Tag.create(name: tag)
+    end
    link.save
    redirect to('/links')
   end
@@ -26,6 +38,16 @@ class BookmarkManager < Sinatra::Base
     erb :'links/index'
   end
 
+  get '/users/new' do
+    erb :'users/new'
+  end
+
+  post '/users' do
+  user = User.create(email: params[:email],
+              password: params[:password])
+  session[:user_id] = user.id
+  redirect to('/links')
+end
 
 
   get '/links/new' do
